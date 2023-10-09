@@ -35,10 +35,10 @@ namespace API.Controllers
             try
             {
                 var productService = new ProductService();
-                await productService.PostProduct(productDto);
-                return Ok(productDto);
+                var result = await productService.PostProduct(productDto);
+                return Ok(result);
             }
-            catch (ValidationException ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

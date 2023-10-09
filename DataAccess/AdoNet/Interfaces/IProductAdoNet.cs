@@ -1,15 +1,14 @@
 ﻿using DataAccess.Entities;
-using Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.Interfaces
+namespace DataAccess.AdoNet.Interfaces
 {
-    public interface IProductService
+    public interface IProductAdoNet
     {
-        Task<Product> PostProduct(ProductDto productDto);
+        Task<Product> InsertAsync(Product product);
     }
 }
