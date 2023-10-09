@@ -24,10 +24,14 @@ namespace DataAccess.AdoNet
             {
                 await connection.OpenAsync();
 
-                using (SqlCommand command = new SqlCommand($@"INSERT INTO Products (Name, Price, Brand, CreatedAt)
-                                                                    OUTPUT INSERTED.Id
-                                                                    VALUES  ('{product.Name}', {product.Price}, '{product.Brand}','{product.CreatedAt}')", connection))
+                using (SqlCommand command = new SqlCommand(@"INSERT INTO Products (Name, Price, Brand, CreatedAt)
+                                                 OUTPUT INSERTED.Id
+                                                 VALUES  (@Name, @Price, @Brand, @CreatedAt)", connection))
                 {
+                    command.Parameters.AddWithValue("@Name", product.Name);
+                    command.Parameters.AddWithValue("@Price", product.Price);
+                    command.Parameters.AddWithValue("@Brand", product.Brand);
+                    command.Parameters.AddWithValue("@CreatedAt", product.CreatedAt);
 
                     int generatedId = (int)await command.ExecuteScalarAsync();
 

@@ -30,7 +30,8 @@ namespace API.Controllers
         //}
 
         // POST api/<controller>
-        public async Task<IHttpActionResult> Post([FromBody] ProductDto productDto)
+        [HttpPost()]
+        public async Task<IHttpActionResult> Post(ProductDto productDto)
         {
             try
             {
