@@ -17,13 +17,24 @@ namespace API.Controllers
     [RoutePrefix("api/Products")]
     public class ProductController : ApiController
     {
-        // GET api/<controller>
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
+        [HttpGet]
+        [Route("")]
+        public async Task<IHttpActionResult> Get()
+        {
+            try
+            {
+                var productService = new ProductService();
+                var result = await productService.GetProducts();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-        [HttpGet()]
+        [HttpGet]
+        [Route("{id}")]
         public async Task<IHttpActionResult> Get(int id)
         {
             try
@@ -38,7 +49,8 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost()]
+        [HttpPost]
+        [Route("")]
         public async Task<IHttpActionResult> Post(ProductDto productDto)
         {
             try

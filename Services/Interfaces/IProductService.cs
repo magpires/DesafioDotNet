@@ -12,5 +12,6 @@ namespace Services.Interfaces
     {
         Task<Product> PostProduct(ProductDto productDto);
         Task<Product> GetProductById(int id);
+        Task<IEnumerable<Product>> GetProducts();
     }
 }

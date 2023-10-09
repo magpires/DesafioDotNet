@@ -45,5 +45,13 @@ namespace Services
 
             return product;
         }
+
+        public async Task<IEnumerable<Product>> GetProducts()
+        {
+            var productAdonet = new ProductAdoNet(_connectionString);
+            var products = await productAdonet.GetAll();
+
+            return products;
+        }
     }
 }

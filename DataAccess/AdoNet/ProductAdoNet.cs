@@ -20,13 +20,13 @@ namespace DataAccess.AdoNet
             CreateProcedures();
         }
 
-        public async void CreateProcedures()
+        public void CreateProcedures()
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                await connection.OpenAsync();
+                connection.OpenAsync();
 
-                string createStoredProcedureQuery = @"
+                string createStoredProcedureQueryGetProductById = @"
                     IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'GetProductById') AND type in (N'P', N'PC'))
                     BEGIN
                         EXEC('
@@ -39,9 +39,26 @@ namespace DataAccess.AdoNet
                         ');
                     END";
 
-                using (SqlCommand createStoredProcedureCommand = new SqlCommand(createStoredProcedureQuery, connection))
+                using (SqlCommand createStoredProcedureCommand = new SqlCommand(createStoredProcedureQueryGetProductById, connection))
                 {
-                    await createStoredProcedureCommand.ExecuteNonQueryAsync();
+                    createStoredProcedureCommand.ExecuteNonQueryAsync();
+                }
+
+                string createStoredProcedureQueryGetProducts = @"
+                    IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'GetProducts') AND type in (N'P', N'PC'))
+                    BEGIN
+                        EXEC('
+                        CREATE PROCEDURE GetProducts
+                        AS
+                        BEGIN
+                            SELECT * FROM Products;
+                        END
+                        ');
+                    END";
+
+                using (SqlCommand createStoredProcedureCommand = new SqlCommand(createStoredProcedureQueryGetProducts, connection))
+                {
+                    createStoredProcedureCommand.ExecuteNonQueryAsync();
                 }
             }
         }
@@ -81,9 +98,7 @@ namespace DataAccess.AdoNet
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-
-                // Chama a Stored Procedure com um ID específico
-                string getProductIdQuery = "GetProductById"; // Nome da Stored Procedure
+                string getProductIdQuery = "GetProductById";
 
                 using (SqlCommand getProductIdCommand = new SqlCommand(getProductIdQuery, connection))
                 {
@@ -107,12 +122,46 @@ namespace DataAccess.AdoNet
                         }
                         else
                         {
-                            // Não há dados para ler
                             return null;
                         }
                     }
                 }
             }
         }
+
+        public async Task<IEnumerable<Product>> GetAll()
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                string getProductsQuery = "GetProducts";
+                var products = new List<Product>();
+
+                using (SqlCommand getProductsCommand = new SqlCommand(getProductsQuery, connection))
+                {
+                    getProductsCommand.CommandType = CommandType.StoredProcedure;
+
+                    using (SqlDataReader reader = await getProductsCommand.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            Product product = new Product
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                Price = reader.GetDecimal(reader.GetOrdinal("Price")),
+                                Brand = reader.GetString(reader.GetOrdinal("Brand")),
+                                CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
+                            };
+
+                            products.Add(product);
+                        }
+                    }
+                }
+
+                return products;
+            }
+        }
+
     }
 }

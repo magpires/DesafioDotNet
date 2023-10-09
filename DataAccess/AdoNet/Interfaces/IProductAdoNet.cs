@@ -11,5 +11,6 @@ namespace DataAccess.AdoNet.Interfaces
     {
         Task<Product> InsertAsync(Product product);
         Task<Product> GetById(int id);
+        Task<IEnumerable<Product>> GetAll();
     }
 }
