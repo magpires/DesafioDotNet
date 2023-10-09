@@ -34,5 +34,16 @@ namespace Services
 
             return product;
         }
+
+        public async Task<Product> GetProductById(int id)
+        {
+            var productAdonet = new ProductAdoNet(_connectionString);
+            var product = await productAdonet.GetById(id);
+
+            if (product == null)
+                throw new ValidationException($"This product not found.");
+
+            return product;
+        }
     }
 }

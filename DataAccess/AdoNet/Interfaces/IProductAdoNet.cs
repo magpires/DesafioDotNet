@@ -10,5 +10,6 @@ namespace DataAccess.AdoNet.Interfaces
     public interface IProductAdoNet
     {
         Task<Product> InsertAsync(Product product);
+        Task<Product> GetById(int id);
     }
 }

@@ -23,13 +23,21 @@ namespace API.Controllers
         //    return new string[] { "value1", "value2" };
         //}
 
-        //// GET api/<controller>/5
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        [HttpGet()]
+        public async Task<IHttpActionResult> Get(int id)
+        {
+            try
+            {
+                var productService = new ProductService();
+                var result = await productService.GetProductById(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-        // POST api/<controller>
         [HttpPost()]
         public async Task<IHttpActionResult> Post(ProductDto productDto)
         {

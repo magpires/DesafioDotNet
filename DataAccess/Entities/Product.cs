@@ -9,6 +9,8 @@ namespace DataAccess.Entities
 {
     public class Product : BaseEntity
     {
+        public Product() { }
+        
         public Product(string name, decimal price, string brand)
         {
             Name = name;

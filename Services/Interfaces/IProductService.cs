@@ -11,5 +11,6 @@ namespace Services.Interfaces
     public interface IProductService
     {
         Task<Product> PostProduct(ProductDto productDto);
+        Task<Product> GetProductById(int id);
     }
 }
