@@ -17,6 +17,33 @@ namespace DataAccess.AdoNet
         public ProductAdoNet(string connectionString)
         {
             _connectionString = connectionString;
+            CreateProcedures();
+        }
+
+        public async void CreateProcedures()
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                string createStoredProcedureQuery = @"
+                    IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'GetProductById') AND type in (N'P', N'PC'))
+                    BEGIN
+                        EXEC('
+                        CREATE PROCEDURE GetProductById
+                            @ProductId INT
+                        AS
+                        BEGIN
+                            SELECT * FROM Products WHERE id = @ProductId;
+                        END
+                        ');
+                    END";
+
+                using (SqlCommand createStoredProcedureCommand = new SqlCommand(createStoredProcedureQuery, connection))
+                {
+                    await createStoredProcedureCommand.ExecuteNonQueryAsync();
+                }
+            }
         }
 
         public async Task<Product> InsertAsync(Product product)
@@ -54,25 +81,6 @@ namespace DataAccess.AdoNet
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-
-                // Cria a Stored Procedure se não existir
-                string createStoredProcedureQuery = @"
-                    IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'GetProductById') AND type in (N'P', N'PC'))
-                    BEGIN
-                        EXEC('
-                        CREATE PROCEDURE GetProductById
-                            @ProductId INT
-                        AS
-                        BEGIN
-                            SELECT * FROM Products WHERE id = @ProductId;
-                        END
-                        ');
-                    END";
-
-                using (SqlCommand createStoredProcedureCommand = new SqlCommand(createStoredProcedureQuery, connection))
-                {
-                    await createStoredProcedureCommand.ExecuteNonQueryAsync();
-                }
 
                 // Chama a Stored Procedure com um ID específico
                 string getProductIdQuery = "GetProductById"; // Nome da Stored Procedure
