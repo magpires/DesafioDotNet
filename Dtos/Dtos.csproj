@@ -51,8 +51,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ProductDto.cs" />
+    <Compile Include="ProductUpdateDto.cs" />
+    <Compile Include="ProductInsertDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validators\ProductUpdateValidator.cs" />
     <Compile Include="Validators\ProductInsertValidator.cs" />
   </ItemGroup>
   <ItemGroup>

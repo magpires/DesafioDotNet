@@ -93,7 +93,7 @@ namespace DataAccess.AdoNet
             }
         }
 
-        public async Task<Product> GetById(int id)
+        public async Task<Product> GetByIdAsync(int id)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -115,7 +115,8 @@ namespace DataAccess.AdoNet
                                 Name = reader.GetString(reader.GetOrdinal("Name")),
                                 Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                                 Brand = reader.GetString(reader.GetOrdinal("Brand")),
-                                CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
+                                CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+                                UpdatedAt = reader.IsDBNull(reader.GetOrdinal("UpdatedAt")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("UpdatedAt")),
                             };
 
                             return product;
@@ -129,7 +130,7 @@ namespace DataAccess.AdoNet
             }
         }
 
-        public async Task<IEnumerable<Product>> GetAll()
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -151,7 +152,8 @@ namespace DataAccess.AdoNet
                                 Name = reader.GetString(reader.GetOrdinal("Name")),
                                 Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                                 Brand = reader.GetString(reader.GetOrdinal("Brand")),
-                                CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
+                                CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+                                UpdatedAt = reader.IsDBNull(reader.GetOrdinal("UpdatedAt")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("UpdatedAt")),
                             };
 
                             products.Add(product);
@@ -163,5 +165,40 @@ namespace DataAccess.AdoNet
             }
         }
 
+        public async Task<Product> UpdateAsync(Product product)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (SqlCommand command = new SqlCommand(@"
+                                                    UPDATE Products
+                                                    SET
+                                                        Name = @Name,
+                                                        Price = @Price,
+                                                        Brand = @Brand,
+                                                        UpdatedAt = @UpdatedAt
+                                                    WHERE
+                                                        Id = @Id", connection))
+                {
+                    command.Parameters.AddWithValue("@Name", product.Name);
+                    command.Parameters.AddWithValue("@Price", product.Price);
+                    command.Parameters.AddWithValue("@Brand", product.Brand);
+                    command.Parameters.AddWithValue("@UpdatedAt", product.UpdatedAt);
+                    command.Parameters.AddWithValue("@Id", product.Id);
+
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    if (rowsAffected > 0)
+                    {
+                        return product;
+                    }
+                    else
+                    {
+                        throw new Exception("An error occurred while trying to update the data.");
+                    }
+                }
+            }
+        }
     }
 }

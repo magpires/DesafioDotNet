@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Dtos
 {
-    public class ProductDto
+    public class ProductInsertDto
     {
         [Required(ErrorMessage = "The name cannot be empty")]
         public string Name { get; set; }

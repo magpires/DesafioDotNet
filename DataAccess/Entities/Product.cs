@@ -22,7 +22,7 @@ namespace DataAccess.Entities
         public decimal Price { get; set; }
         public string Brand { get; set; }
 
-        public static implicit operator Product(ProductDto productDto)
+        public static implicit operator Product(ProductInsertDto productDto)
         {
             return new Product(productDto.Name, productDto.Price, productDto.Brand);
         }

@@ -21,24 +21,24 @@ namespace Services
             _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
         }
 
-        public async Task<Product> PostProduct(ProductDto productDto)
+        public async Task<Product> PostProductAsync(ProductInsertDto productInsertDto)
         {
-            string errorMessage = ProductInsertValidator.ValidateProduct(productDto);
+            string errorMessage = ProductInsertValidator.ValidateProduct(productInsertDto);
 
             if (errorMessage != null)
-                throw new ValidationException($"Erro de validação: {errorMessage}");
+                throw new ValidationException($"Error validation: {errorMessage}");
 
             var productAdonet = new ProductAdoNet(_connectionString);
 
-            var product = await productAdonet.InsertAsync(productDto);
+            var product = await productAdonet.InsertAsync(productInsertDto);
 
             return product;
         }
 
-        public async Task<Product> GetProductById(int id)
+        public async Task<Product> GetProductByIdAsync(int id)
         {
             var productAdonet = new ProductAdoNet(_connectionString);
-            var product = await productAdonet.GetById(id);
+            var product = await productAdonet.GetByIdAsync(id);
 
             if (product == null)
                 throw new ValidationException($"This product not found.");
@@ -46,12 +46,40 @@ namespace Services
             return product;
         }
 
-        public async Task<IEnumerable<Product>> GetProducts()
+        public async Task<IEnumerable<Product>> GetProductsAsync()
         {
             var productAdonet = new ProductAdoNet(_connectionString);
-            var products = await productAdonet.GetAll();
+            var products = await productAdonet.GetAllAsync();
 
             return products;
+        }
+
+        public void MergeProperties(ProductUpdateDto source, Product destiny)
+        {
+            destiny.Name = string.IsNullOrEmpty(source.Name) ? destiny.Name : source.Name;
+            destiny.Price = source.Price.HasValue && source.Price > 0 ? source.Price.Value : destiny.Price;
+            destiny.Brand = string.IsNullOrEmpty(source.Brand) ? destiny.Brand : source.Brand;
+        }
+
+        public async Task<Product> UpdateProductAsync(ProductUpdateDto productUpdateDto, int id)
+        {
+            string errorMessage = ProductUpdateValidator.ValidateProduct(productUpdateDto);
+
+            if (errorMessage != null)
+                throw new ValidationException($"Error validation: {errorMessage}");
+
+            var productAdonet = new ProductAdoNet(_connectionString);
+
+            var productDatabase = await productAdonet.GetByIdAsync(id);
+
+            if (productDatabase == null)
+                throw new ValidationException($"This product not found.");
+
+            MergeProperties(productUpdateDto, productDatabase);
+            productDatabase.AlterUpdatedAt();
+            await productAdonet.UpdateAsync(productDatabase);
+
+            return productDatabase;
         }
     }
 }

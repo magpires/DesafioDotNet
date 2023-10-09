@@ -4,14 +4,14 @@ using System.Linq;
 
 namespace Dtos.Validators
 {
-    public class ProductInsertValidator
+    public class ProductUpdateValidator
     {
-        public static string ValidateProduct(ProductInsertDto productInsertDto)
+        public static string ValidateProduct(ProductUpdateDto productUpdateDto)
         {
             var validationResults = new List<ValidationResult>();
-            var validationContext = new ValidationContext(productInsertDto, serviceProvider: null, items: null);
+            var validationContext = new ValidationContext(productUpdateDto, serviceProvider: null, items: null);
 
-            bool isNotValid = !Validator.TryValidateObject(productInsertDto, validationContext, validationResults, validateAllProperties: true);
+            bool isNotValid = !Validator.TryValidateObject(productUpdateDto, validationContext, validationResults, validateAllProperties: true);
 
             if (isNotValid)
             {

@@ -24,7 +24,7 @@ namespace API.Controllers
             try
             {
                 var productService = new ProductService();
-                var result = await productService.GetProducts();
+                var result = await productService.GetProductsAsync();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -40,7 +40,7 @@ namespace API.Controllers
             try
             {
                 var productService = new ProductService();
-                var result = await productService.GetProductById(id);
+                var result = await productService.GetProductByIdAsync(id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -51,12 +51,28 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("")]
-        public async Task<IHttpActionResult> Post(ProductDto productDto)
+        public async Task<IHttpActionResult> Post(ProductInsertDto productInsertDto)
         {
             try
             {
                 var productService = new ProductService();
-                var result = await productService.PostProduct(productDto);
+                var result = await productService.PostProductAsync(productInsertDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IHttpActionResult> Put(ProductUpdateDto productUpdateDto, int id)
+        {
+            try
+            {
+                var productService = new ProductService();
+                var result = await productService.UpdateProductAsync(productUpdateDto, id);
                 return Ok(result);
             }
             catch (Exception ex)
