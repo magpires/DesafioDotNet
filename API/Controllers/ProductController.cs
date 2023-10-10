@@ -81,14 +81,20 @@ namespace API.Controllers
             }
         }
 
-        //// PUT api/<controller>/5
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
-
-        //// DELETE api/<controller>/5
-        //public void Delete(int id)
-        //{
-        //}
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IHttpActionResult> Delete(int id)
+        {
+            try
+            {
+                var productService = new ProductService();
+                var result = await productService.RemoveProductAsync(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

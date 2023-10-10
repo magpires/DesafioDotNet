@@ -81,5 +81,16 @@ namespace Services
 
             return productDatabase;
         }
+
+        public async Task<bool> RemoveProductAsync(int id)
+        {
+            var productAdonet = new ProductAdoNet(_connectionString);
+            var productNotFound = await productAdonet.GetByIdAsync(id) == null;
+
+            if (productNotFound)
+                throw new ValidationException($"This product not found.");
+
+            return await productAdonet.DeleteAsync(id);
+        }
     }
 }

@@ -200,5 +200,32 @@ namespace DataAccess.AdoNet
                 }
             }
         }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (SqlCommand command = new SqlCommand(@"
+                                                    DELETE FROM Products
+                                                    WHERE
+                                                        Id = @Id", connection))
+                {
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    if (rowsAffected > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                       return false;
+                    }
+                }
+            }
+        }
     }
 }

@@ -14,5 +14,6 @@ namespace Services.Interfaces
         Task<Product> GetProductByIdAsync(int id);
         Task<IEnumerable<Product>> GetProductsAsync();
         Task<Product> UpdateProductAsync(ProductUpdateDto productDto, int id);
+        Task<bool> RemoveProductAsync(int id);
     }
 }
